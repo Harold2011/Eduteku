@@ -31,4 +31,14 @@ class bootcamps extends Model
     {
         return $this->belongsToMany(sponsor::class, 'bootcamp_sponsor', 'id_bootcamp', 'id_sponsor');
     }
+
+    public function userInfo()
+    {
+        return $this->hasMany(userInfo::class, 'bootcamp_id', 'id');
+    }
+    public function challenge()
+    {
+        return $this->hasMany(Challenge::class);
+    }
+
 }

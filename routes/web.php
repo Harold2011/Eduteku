@@ -23,7 +23,12 @@ use App\Http\Controllers\BulletinAdminInfoController;
 use App\Http\Controllers\BulletinAdminController;
 use App\Http\Controllers\bootcampController;
 use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\TagsController;
 use App\Models\Category;
+use App\Models\Challenge;
+use App\Http\Controllers\ChallengeTypeController;
+use App\Http\Controllers\ChallengeQuestionController;
+
 
 Route::resource('index', IndexController::class);
 Route::get('/', [IndexController::class, 'index']);
@@ -44,6 +49,8 @@ Route::get('ruta', function () {
 Route::get('successCases', function () {
     return view('users.successCases');
 });
+
+Route::get('openInnovation/{challengeType}', [ChallengeTypeController::class, 'showQuestions'])->name('openInnovation');
 
 Route::middleware([
     'auth:sanctum',
@@ -69,6 +76,11 @@ Route::middleware([
     Route::resource('bulletinInfoAdmin', BulletinAdminInfoController::class);
     Route::resource('bulletinAdmin', BulletinAdminController::class);
     Route::get('panelBulletin', [BulletinAdminInfoController::class, 'panel'])->name('panelBulletin');
+    Route::get('surveyTypes', [ChallengeTypeController::class, 'index'])->name('surveyType');
+    Route::get('surveyTypes/{challengeType}/questions', [ChallengeTypeController::class, 'details'])->name('surveyQuestions');
+    Route::resource('challengeQuestions', ChallengeQuestionController::class);
+    // This route has to be placed before the Route::resource('challenges'...) definition
+    Route::post('challenges/{challenge}/answers', [ChallengeController::class, 'storeAnswers'])->name('challenge.answers');
     Route::post('/users/{user}/change-role', [UserController::class, 'changeRole'])->name('user.changeRole');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/bootcamp', [bootcampController::class, 'index'])->name('bootcamp.index');
@@ -88,6 +100,11 @@ Route::middleware([
     Route::delete('/bootcampLanding/destroy/{bootcamp}', [bootcampController::class, 'destroybootcamp'])->name('bootcampLanding.destroy');
     Route::get('/bootcampLanding/{id}/edit', [bootcampController::class, 'editbootcamp'])->name('bootcampLanding.edit');
     Route::put('/bootcampLanding/{id}', [bootcampController::class, 'updatebootcamp'])->name('bootcampLanding.update');
+
+    // Route::get('/challenge', [ChallengeController::class, 'index'])->name('challenge');
+    // Route::post('/challenge/create', [ChallengeController::class, 'store']);
+    Route::resource('challenge', ChallengeController::class);
+    Route::get('/tags', [TagsController::class, 'getTags']);
     Route::get('/challenge', [ChallengeController::class, 'index'])->name('challenge');
     Route::get('/viewChallenge/{id}', [ChallengeController::class, 'indexClient'])->name('viewChallenge');
 
@@ -103,4 +120,9 @@ Route::middleware([
 
     Route::get('/bootcamp_participation/{id}', [BootcampController::class, 'bootcampParticipation'])->name('bootcamp_participation');
     Route::post('/bootcamp_participation/{bootcamp}', [bootcampController::class, 'bootcampParticipationStore'])->name('bootcamp_participation.store');
+    Route::get('/bootcamp_participation_admin', [BootcampController::class, 'bootcampParticipationindex'])->name('bootcamp_participation_admin.index');
+    Route::put('/bootcamp_participation_admin/{id}/toggle-challenge-state', [BootcampController::class, 'toggleChallengeState'])->name('bootcamp_participation_admin.toggleChallengeState');
+    Route::get('/challenges/{id}/solve', [ChallengeController::class, 'solve'])->name('challenge.solve');
+    Route::get('/challenges/{id}/form', [ChallengeController::class, 'showForm'])->name('challenge.form');
+
 });
